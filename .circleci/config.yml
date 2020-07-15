@@ -10,8 +10,6 @@ jobs:
     executor: ask-executor
     steps:
       - checkout
-      - run: chmod +x -R ./hooks
-      - run: chmod +x -R ./test
       - persist_to_workspace:
           root: /home/node/
           paths:
@@ -21,8 +19,7 @@ jobs:
     steps:
       - attach_workspace:
           at: /home/node/
-      - run: ls -la
-      - run: cd lambda/custom && npm install
+      - run: cd scripts/ && ./create_hosted_skill.sh
       - persist_to_workspace:
           root: /home/node/
           paths:
