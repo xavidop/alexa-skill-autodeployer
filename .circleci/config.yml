@@ -10,7 +10,7 @@ jobs:
     executor: ask-executor
     steps:
       - checkout
-      - run: chmod +x -R ./scripts
+      - run: chmod +x -R ./create_hosted_skill.sh
       - persist_to_workspace:
           root: /home/node/
           paths:
