@@ -12,7 +12,7 @@ send -- "\r"
 expect "Please type in your skill name:"
 send -- "\r"
 expect "Please type in your folder name for the skill project (alphanumeric):"
-send -- "\r"
+send -- "template\r"
 expect "Hosted skill provisioning finished"
 
 
