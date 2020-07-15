@@ -25,7 +25,7 @@ jobs:
           command: |
             basename=$(basename $GIT_TEMPLATE_URL)
             repo_folder=${basename%.*} 
-            cd scripts/ && ./create_hosted_skill.sh $repo_folder
+            ./create_hosted_skill.sh $repo_folder
       - persist_to_workspace:
           root: /home/node/
           paths:
