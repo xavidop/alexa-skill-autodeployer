@@ -34,11 +34,15 @@ jobs:
       - run: rm -rf template/lambda/
       - run: rm -rf template/skill-package/interactionModels
       - run: git clone $GIT_TEMPLATE_URL
-      - run: basename=$(basename https://github.com/jeffblankenburg/AlexaSkillTemplate.git) && repo_folder=${basename%.*} 
-      #cleanup template downloaded metada, getting only lambda + skill-packages objeects
-      - run: rm -rf $repo_folder/.git && rm -rf $repo_folder/.ask && rm -rf $repo_folder/ask-resources.json && rm -rf $repo_folder/skill-package/skill.json 
-      #copy downloaded template fully cleaned to final template to push
-      - run: cp -R $repo_folder/. template/
+       #cleanup template downloaded metada, getting only lambda + skill-packages objeects 
+       #copy downloaded template fully cleaned to final template to push
+      - run: 
+          name: clean up donwloaded template
+          command: |
+            basename=$(basename https://github.com/jeffblankenburg/AlexaSkillTemplate.git)
+            repo_folder=${basename%.*} 
+            rm -rf $repo_folder/.git && rm -rf $repo_folder/.ask && rm -rf $repo_folder/ask-resources.json && rm -rf $repo_folder/skill-package/skill.json 
+            cp -R $repo_folder/. template/
       - persist_to_workspace:
           root: /home/node/
           paths:
