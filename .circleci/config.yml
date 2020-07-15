@@ -10,6 +10,7 @@ jobs:
     executor: ask-executor
     steps:
       - checkout
+      - run: chmod +x -R ./scripts
       - persist_to_workspace:
           root: /home/node/
           paths:
