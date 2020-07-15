@@ -20,7 +20,12 @@ jobs:
     steps:
       - attach_workspace:
           at: /home/node/
-      - run: cd scripts/ && ./create_hosted_skill.sh
+      - run: 
+          name: create hosted skill
+          command: |
+            basename=$(basename $GIT_TEMPLATE_URL)
+            repo_folder=${basename%.*} 
+            cd scripts/ && ./create_hosted_skill.sh $repo_folder
       - persist_to_workspace:
           root: /home/node/
           paths:
@@ -39,7 +44,7 @@ jobs:
       - run: 
           name: clean up donwloaded template
           command: |
-            basename=$(basename https://github.com/jeffblankenburg/AlexaSkillTemplate.git)
+            basename=$(basename  $GIT_TEMPLATE_URL)
             repo_folder=${basename%.*} 
             rm -rf $repo_folder/.git && rm -rf $repo_folder/.ask && rm -rf $repo_folder/ask-resources.json && rm -rf $repo_folder/skill-package/skill.json 
             cp -R $repo_folder/. template/
@@ -56,7 +61,7 @@ jobs:
       - run: git config --global user.email "you@example.com"
       - run: git config --global user.name "Your Name"
       #push the final skill
-      - run: cd template/ && git push origin master
+      - run: cd template/ && git add . && git commit -m "template added" && git push origin master
       - persist_to_workspace:
           root: /home/node/
           paths:
