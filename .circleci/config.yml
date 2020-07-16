@@ -1,4 +1,17 @@
 version: 2.1
+parameters:
+  ASK_ACCESS_TOKEN:
+    type: string
+    default: ""
+  ASK_REFRESH_TOKEN:
+    type: string
+    default: ""
+  ASK_VENDOR_ID:
+    type: string
+    default: ""
+  GIT_TEMPLATE_URL:
+    type: string
+    default: ""
 
 executors:
   ask-executor:
