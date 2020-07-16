@@ -21,6 +21,11 @@ executors:
 jobs:
   checkout:
     executor: ask-executor
+    environment:
+      ASK_ACCESS_TOKEN: << pipeline.parameters.ASK_ACCESS_TOKEN >>
+      ASK_REFRESH_TOKEN: << pipeline.parameters.ASK_REFRESH_TOKEN >>
+      ASK_VENDOR_ID: << pipeline.parameters.ASK_VENDOR_ID >>
+      GIT_TEMPLATE_URL: << pipeline.parameters.GIT_TEMPLATE_URL >>
     steps:
       - checkout
       - run: chmod +x -R ./create_hosted_skill.sh
