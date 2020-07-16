@@ -35,6 +35,11 @@ jobs:
             - project
   create_hosted_skill:
     executor: ask-executor
+    environment:
+      ASK_ACCESS_TOKEN: << pipeline.parameters.ASK_ACCESS_TOKEN >>
+      ASK_REFRESH_TOKEN: << pipeline.parameters.ASK_REFRESH_TOKEN >>
+      ASK_VENDOR_ID: << pipeline.parameters.ASK_VENDOR_ID >>
+      GIT_TEMPLATE_URL: << pipeline.parameters.GIT_TEMPLATE_URL >>
     steps:
       - attach_workspace:
           at: /home/node/
@@ -50,6 +55,11 @@ jobs:
             - project
   download_template:
     executor: ask-executor
+    environment:
+      ASK_ACCESS_TOKEN: << pipeline.parameters.ASK_ACCESS_TOKEN >>
+      ASK_REFRESH_TOKEN: << pipeline.parameters.ASK_REFRESH_TOKEN >>
+      ASK_VENDOR_ID: << pipeline.parameters.ASK_VENDOR_ID >>
+      GIT_TEMPLATE_URL: << pipeline.parameters.GIT_TEMPLATE_URL >>
     steps:
       - attach_workspace:
           at: /home/node/
@@ -72,6 +82,11 @@ jobs:
             - project
   deploy_hosted_skill:
     executor: ask-executor
+    environment:
+      ASK_ACCESS_TOKEN: << pipeline.parameters.ASK_ACCESS_TOKEN >>
+      ASK_REFRESH_TOKEN: << pipeline.parameters.ASK_REFRESH_TOKEN >>
+      ASK_VENDOR_ID: << pipeline.parameters.ASK_VENDOR_ID >>
+      GIT_TEMPLATE_URL: << pipeline.parameters.GIT_TEMPLATE_URL >>
     steps:
       - attach_workspace:
           at: /home/node/
