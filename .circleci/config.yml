@@ -121,7 +121,7 @@ jobs:
             else
                info=$(cat $repo_folder/skill-package/skill.json | jq -rc .manifest.publishingInformation)
                skill_info=$(jq -rc --argjson info "$info" '.manifest.publishingInformation = $info' template/skill-package/skill.json)
-               echo $skill_info > template/skill.json
+               echo $skill_info > template/skill-package/skill.json
 
                dir=$(cat $repo_folder/ask-resources.json | jq -r .profiles.default.code.default.src)
 
