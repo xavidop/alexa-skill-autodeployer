@@ -104,9 +104,9 @@ jobs:
 
             rm -rf $repo_folder/.git 
             if [ "$ASK_VERSION" == "1.0" ]; then
-              info=$(cat skill-sample-nodejs-highlowgame/skill.json | jq -r .manifest.publishingInformation)
+              info=$(cat $repo_folder/skill.json | jq -r .manifest.publishingInformation)
               skill_info=$(jq -r --arg info "$info" '.manifest.publishingInformation = $info' template/skill.json)
-              dir=$(cat skill-sample-nodejs-highlowgame/skill.json | jq .manifest.apis.custom.endpoint.sourceDir)
+              dir=$(cat $repo_folder/skill.json | jq -r .manifest.apis.custom.endpoint.sourceDir)
 
               rm -rf $repo_folder/.ask
               rm -rf $repo_folder/skill.json
