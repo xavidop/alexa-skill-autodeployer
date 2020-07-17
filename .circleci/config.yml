@@ -38,6 +38,7 @@ jobs:
       - checkout
       - run: chmod +x -R ./create_hosted_skill_v2.sh
       - run: chmod +x -R ./create_hosted_skill_v1.sh
+      - run: chmod +x -R ./deploy_hosted_skill_v1.sh
       - persist_to_workspace:
           root: /home/node/
           paths:
@@ -137,13 +138,12 @@ jobs:
           name: deploy
           command: |
             cd template/
-
+            git add . 
+            git commit -m "template added" 
             if [ "$ASK_VERSION" == "1.0" ]; then
-              ask deploy --force
+              ./deploy_hosted_skill_v1.sh
             else
-               git add . 
-               git commit -m "template added" 
-               git push origin master
+              git push origin master
             fi
       - persist_to_workspace:
           root: /home/node/
