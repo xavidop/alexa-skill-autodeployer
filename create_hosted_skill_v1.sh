@@ -9,7 +9,7 @@ expect "Please type in your skill name"
 send -- "template\r"
 expect "Please select the runtime"
 send -- "\r"
-expect "Alexa hosted skill is created. Do you want to clone the skill project to current working directory?"
+expect "Alexa hosted skill is created. Do you want to clone the skill"
 send -- "\r"
 expect "successfuly cloned."
 
