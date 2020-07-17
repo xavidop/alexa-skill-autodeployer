@@ -104,16 +104,23 @@ jobs:
 
             rm -rf $repo_folder/.git 
             if [ "$ASK_VERSION" == "1.0" ]; then
-              
+              info=$(cat $repo_folder/skill.json | jq .manifest.publishingInformation)
+              skill_info=$(jq  --arg info "$info" '.manifest.publishingInformation = $info' template/skill.json)
+
               rm -rf $repo_folder/.ask
               rm -rf $repo_folder/skill.json
+              cp -R $repo_folder/. template/
+              
+              cp -R  template/lambda/custom/. template/lambda/
+              rm -rf template/lambda/custom/
             else
 
                rm -rf $repo_folder/.ask 
                rm -rf $repo_folder/ask-resources.json 
                rm -rf $repo_folder/skill-package/skill.json
+               cp -R $repo_folder/. template/
             fi
-            cp -R $repo_folder/. template/
+            
       - persist_to_workspace:
           root: /home/node/
           paths:
@@ -142,6 +149,8 @@ jobs:
             git commit -m "template added" 
             if [ "$ASK_VERSION" == "1.0" ]; then
               cp ../deploy_hosted_skill_v1.sh ./
+              echo "" >> .gitignore
+              echo "deploy_hosted_skill_v1.sh" >> .gitignore
               ./deploy_hosted_skill_v1.sh
             else
               git push origin master
