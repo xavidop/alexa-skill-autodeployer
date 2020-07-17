@@ -89,7 +89,6 @@ jobs:
 
             if [ "$ASK_VERSION" == "1.0" ]; then
               rm -rf template/models
-              rm -rf template/skill.json
             else
               rm -rf template/skill-package/interactionModels
             fi           
