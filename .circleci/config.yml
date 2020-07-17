@@ -12,6 +12,9 @@ parameters:
   GIT_TEMPLATE_URL:
     type: string
     default: ""
+  GIT_BRANCH:
+    type: string
+    default: "master"
 
 executors:
   ask-executor:
@@ -26,6 +29,7 @@ jobs:
       ASK_REFRESH_TOKEN: << pipeline.parameters.ASK_REFRESH_TOKEN >>
       ASK_VENDOR_ID: << pipeline.parameters.ASK_VENDOR_ID >>
       GIT_TEMPLATE_URL: << pipeline.parameters.GIT_TEMPLATE_URL >>
+      GIT_BRANCH: << pipeline.parameters.GIT_BRANCH >>
     steps:
       - checkout
       - run: chmod +x -R ./create_hosted_skill.sh
@@ -40,6 +44,7 @@ jobs:
       ASK_REFRESH_TOKEN: << pipeline.parameters.ASK_REFRESH_TOKEN >>
       ASK_VENDOR_ID: << pipeline.parameters.ASK_VENDOR_ID >>
       GIT_TEMPLATE_URL: << pipeline.parameters.GIT_TEMPLATE_URL >>
+      GIT_BRANCH: << pipeline.parameters.GIT_BRANCH >>
     steps:
       - attach_workspace:
           at: /home/node/
@@ -60,13 +65,14 @@ jobs:
       ASK_REFRESH_TOKEN: << pipeline.parameters.ASK_REFRESH_TOKEN >>
       ASK_VENDOR_ID: << pipeline.parameters.ASK_VENDOR_ID >>
       GIT_TEMPLATE_URL: << pipeline.parameters.GIT_TEMPLATE_URL >>
+      GIT_BRANCH: << pipeline.parameters.GIT_BRANCH >>
     steps:
       - attach_workspace:
           at: /home/node/
       #removing ask cli template lambda + skill-packages
       - run: rm -rf template/lambda/
       - run: rm -rf template/skill-package/interactionModels
-      - run: git clone $GIT_TEMPLATE_URL
+      - run: git clone -b $GIT_BRANCH $GIT_TEMPLATE_URL
        #cleanup template downloaded metada, getting only lambda + skill-packages objeects 
        #copy downloaded template fully cleaned to final template to push
       - run: 
@@ -87,6 +93,7 @@ jobs:
       ASK_REFRESH_TOKEN: << pipeline.parameters.ASK_REFRESH_TOKEN >>
       ASK_VENDOR_ID: << pipeline.parameters.ASK_VENDOR_ID >>
       GIT_TEMPLATE_URL: << pipeline.parameters.GIT_TEMPLATE_URL >>
+      GIT_BRANCH: << pipeline.parameters.GIT_BRANCH >>
     steps:
       - attach_workspace:
           at: /home/node/
