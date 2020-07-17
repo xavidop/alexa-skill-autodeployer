@@ -11,7 +11,7 @@ expect "Choose a method to host your skill's backend resources"
 send -- "\r"
 expect "Please type in your skill name:"
 send -- "${template}\r"
-expect "Please type in your folder name for the skill project (alphanumeric):"
+expect "Please type in your folder name"
 send -- "../template\r"
 expect "Hosted skill provisioning finished"
 
