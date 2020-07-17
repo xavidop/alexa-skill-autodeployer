@@ -9,6 +9,9 @@ parameters:
   ASK_VENDOR_ID:
     type: string
     default: ""
+  ASK_VERSION:
+    type: string
+    default: "2.0"
   GIT_TEMPLATE_URL:
     type: string
     default: ""
@@ -19,7 +22,7 @@ parameters:
 executors:
   ask-executor:
     docker:
-      - image: xavidop/alexa-ask-aws-cli:2.0
+      - image: xavidop/alexa-ask-aws-cli:<< pipeline.parameters.ASK_VERSION >>
 
 jobs:
   checkout:
@@ -28,11 +31,13 @@ jobs:
       ASK_ACCESS_TOKEN: << pipeline.parameters.ASK_ACCESS_TOKEN >>
       ASK_REFRESH_TOKEN: << pipeline.parameters.ASK_REFRESH_TOKEN >>
       ASK_VENDOR_ID: << pipeline.parameters.ASK_VENDOR_ID >>
+      ASK_VERSION: << pipeline.parameters.ASK_VERSION >>
       GIT_TEMPLATE_URL: << pipeline.parameters.GIT_TEMPLATE_URL >>
       GIT_BRANCH: << pipeline.parameters.GIT_BRANCH >>
     steps:
       - checkout
-      - run: chmod +x -R ./create_hosted_skill.sh
+      - run: chmod +x -R ./create_hosted_skill_v2.sh
+      - run: chmod +x -R ./create_hosted_skill_v1.sh
       - persist_to_workspace:
           root: /home/node/
           paths:
@@ -43,6 +48,7 @@ jobs:
       ASK_ACCESS_TOKEN: << pipeline.parameters.ASK_ACCESS_TOKEN >>
       ASK_REFRESH_TOKEN: << pipeline.parameters.ASK_REFRESH_TOKEN >>
       ASK_VENDOR_ID: << pipeline.parameters.ASK_VENDOR_ID >>
+      ASK_VERSION: << pipeline.parameters.ASK_VERSION >>
       GIT_TEMPLATE_URL: << pipeline.parameters.GIT_TEMPLATE_URL >>
       GIT_BRANCH: << pipeline.parameters.GIT_BRANCH >>
     steps:
@@ -53,7 +59,12 @@ jobs:
           command: |
             base_file=$(basename $GIT_TEMPLATE_URL)
             repo_folder=${base_file%.*} 
-            ./create_hosted_skill.sh $repo_folder
+            
+             if [ "$ASK_VERSION" == "1.0" ]; then
+              ./create_hosted_skill_v1.sh $repo_folder
+            else
+             ./create_hosted_skill_v2.sh $repo_folder
+            fi           
       - persist_to_workspace:
           root: /home/node/
           paths:
@@ -64,14 +75,24 @@ jobs:
       ASK_ACCESS_TOKEN: << pipeline.parameters.ASK_ACCESS_TOKEN >>
       ASK_REFRESH_TOKEN: << pipeline.parameters.ASK_REFRESH_TOKEN >>
       ASK_VENDOR_ID: << pipeline.parameters.ASK_VENDOR_ID >>
+      ASK_VERSION: << pipeline.parameters.ASK_VERSION >>
       GIT_TEMPLATE_URL: << pipeline.parameters.GIT_TEMPLATE_URL >>
       GIT_BRANCH: << pipeline.parameters.GIT_BRANCH >>
     steps:
       - attach_workspace:
           at: /home/node/
       #removing ask cli template lambda + skill-packages
-      - run: rm -rf template/lambda/
-      - run: rm -rf template/skill-package/interactionModels
+      - run: 
+          name: cleanup skill created
+          command: | 
+            rm -rf template/lambda/
+
+            if [ "$ASK_VERSION" == "1.0" ]; then
+              rm -rf template/models
+              rm -rf template/skill.json
+            else
+              rm -rf template/skill-package/interactionModels
+            fi           
       - run: git clone -b $GIT_BRANCH $GIT_TEMPLATE_URL
        #cleanup template downloaded metada, getting only lambda + skill-packages objeects 
        #copy downloaded template fully cleaned to final template to push
@@ -79,8 +100,19 @@ jobs:
           name: clean up donwloaded template
           command: |
             base_file=$(basename $GIT_TEMPLATE_URL)
-            repo_folder=${base_file%.*} 
-            rm -rf $repo_folder/.git && rm -rf $repo_folder/.ask && rm -rf $repo_folder/ask-resources.json && rm -rf $repo_folder/skill-package/skill.json 
+            repo_folder=${base_file%.*}
+
+            rm -rf $repo_folder/.git 
+            if [ "$ASK_VERSION" == "1.0" ]; then
+              
+              rm -rf $repo_folder/.ask
+              rm -rf $repo_folder/skill.json
+            else
+
+               rm -rf $repo_folder/.ask 
+               rm -rf $repo_folder/ask-resources.json 
+               rm -rf $repo_folder/skill-package/skill.json
+            fi
             cp -R $repo_folder/. template/
       - persist_to_workspace:
           root: /home/node/
@@ -92,6 +124,7 @@ jobs:
       ASK_ACCESS_TOKEN: << pipeline.parameters.ASK_ACCESS_TOKEN >>
       ASK_REFRESH_TOKEN: << pipeline.parameters.ASK_REFRESH_TOKEN >>
       ASK_VENDOR_ID: << pipeline.parameters.ASK_VENDOR_ID >>
+      ASK_VERSION: << pipeline.parameters.ASK_VERSION >>
       GIT_TEMPLATE_URL: << pipeline.parameters.GIT_TEMPLATE_URL >>
       GIT_BRANCH: << pipeline.parameters.GIT_BRANCH >>
     steps:
@@ -101,7 +134,18 @@ jobs:
       - run: git config --global user.email "you@example.com"
       - run: git config --global user.name "Your Name"
       #push the final skill
-      - run: cd template/ && git add . && git commit -m "template added" && git push origin master
+      - run: 
+          name: deploy
+          command: |
+            cd template/
+
+            if [ "$ASK_VERSION" == "1.0" ]; then
+              ask deploy --force
+            else
+               git add . 
+               git commit -m "template added" 
+               git push origin master
+            fi
       - persist_to_workspace:
           root: /home/node/
           paths:
