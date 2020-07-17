@@ -141,7 +141,7 @@ jobs:
             git add . 
             git commit -m "template added" 
             if [ "$ASK_VERSION" == "1.0" ]; then
-              ./deploy_hosted_skill_v1.sh
+              ./../deploy_hosted_skill_v1.sh
             else
               git push origin master
             fi
