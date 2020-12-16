@@ -43,6 +43,7 @@ jobs:
           root: /home/node/
           paths:
             - project
+            - .ask
   create_hosted_skill:
     executor: ask-executor
     environment:
@@ -70,6 +71,7 @@ jobs:
           root: /home/node/
           paths:
             - project
+            - .ask
   download_template:
     executor: ask-executor
     environment:
@@ -140,6 +142,7 @@ jobs:
           root: /home/node/
           paths:
             - project
+            - .ask
   deploy_hosted_skill:
     executor: ask-executor
     environment:
