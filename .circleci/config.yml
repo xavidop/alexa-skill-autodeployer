@@ -122,7 +122,11 @@ jobs:
               fi
             else
                endpoint=$(cat template/skill-package/skill.json | jq -rc .manifest.apis.custom.endpoint)
-               skill_info=$(jq -rc --argjson info "$endpoint" '.manifest.apis.custom.endpoint = $endpoint' $repo_folder/skill-package/skill.json)
+               regions=$(cat template/skill-package/skill.json | jq -rc .manifest.apis.custom.regions)
+               
+               skill_info=$(jq -rc --argjson endpoint "$endpoint" '.manifest.apis.custom.endpoint = $endpoint' $repo_folder/skill-package/skill.json)
+               echo $skill_info > $repo_folder/skill-package/skill.json
+               skill_info=$(jq -rc --argjson regions "$regions" '.manifest.apis.custom.regions = $regions' $repo_folder/skill-package/skill.json)
                echo $skill_info > $repo_folder/skill-package/skill.json
 
                dir=$(cat $repo_folder/ask-resources.json | jq -r .profiles.default.code.default.src)
