@@ -491,7 +491,7 @@ Thanks to the ASK CLI we can perform this complex task.
 I hope this tool is useful to you.
 
 You can use this tool, for example, for the following use cases:
-1. Add a button in your Alexa Skill templates and automatically deploy them in your AWS account.
+1. Add a button in your Alexa Skill templates git repos or in your webpage and automatically deploy them in your AWS account.
 2. Transform you Self Hosted skills into Alexa Hosted ones.
 3. Trying new Alexa skills and keep learning!
 
