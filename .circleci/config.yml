@@ -99,7 +99,7 @@ jobs:
        #cleanup template downloaded metada, getting only lambda + skill-packages objeects 
        #copy downloaded template fully cleaned to final template to push
       - run: 
-          name: clean up donwloaded template
+          name: merge donwloaded template
           command: |
             base_file=$(basename $GIT_TEMPLATE_URL)
             repo_folder=${base_file%.*}
