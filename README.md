@@ -1,7 +1,7 @@
 # Alexa Skill Auto-Deployer
 
-Imagine that you find a template for an Alexa Skill on the internet and want to try it immediately. Well, this is possible thanks to this new tool called Alexa Skill Auto-Deployer.
-These step are automated in the continuous integration system (circleCI) and are executed using its official API.
+Imagine that you find a template of an Alexa Skill on the internet and want to try it immediately. Well, this is possible thanks to this new tool called Alexa Skill Auto-Deployer.
+These steps are automated using the continuous integration system circleCI and are executed using its official API.
 <!-- TOC -->
 
 - [Alexa Skill Auto-Deployer](#alexa-skill-auto-deployer)
@@ -40,7 +40,7 @@ We will use this powerful tool to auto-deploy our Alexa Skill template. Let's st
 ### Installation
 
 We need to install the ASK CLI and some other bash tools like `git`, `expect` or `curl`. Don't worry, I prepared for you a Docker Image where all those tools are [included](https://hub.docker.com/repository/docker/xavidop/alexa-ask-aws-cli).
-We will use this Docker Image as an executor in all the steps of the CircleCI Pipeline.
+We will use this Docker Image as a main executor in all the steps of the CircleCI Pipeline.
 ## CircleCI
 
 CircleCi is one of the most powerful and used CI CD platforms of the world. CircleCI integrates with GitHub, GitHub Enterprise, and Bitbucket. Every time you commit code, CircleCI creates and executes a pipeline. CircleCI automatically runs your pipeline in a clean container or virtual machine, allowing you to test every commit.
@@ -53,7 +53,7 @@ Let's explain job by job what is happening in our powerful pipeline.
 
 ### Setting up the parameters
 
-We are going to use the CircleCI API so because of that we will create some parameters to make this process reusable:
+First of all, you have to know that we are going to use the CircleCI API so because of that, we will create some parameters to make this process reusable:
 
 
 **NOTE:** If you want to run successfully every ASK CLI command, you have to set up these parameters properly:
@@ -64,8 +64,8 @@ We are going to use the CircleCI API so because of that we will create some para
 * `ASK_VERSION`: the version of the ASK CLI you want to use. You can find all the versions available [here](https://hub.docker.com/repository/docker/xavidop/alexa-ask-aws-cli/). By default, 2.0.
 * `GIT_TEMPLATE_URL`: the Alexa Skill template you want to deploy in your AWS Account. This parameter must be a git repo url. Example: https://github.com/alexa/skill-sample-nodejs-highlowgame.git
 * `GIT_BRANCH`: the branch of the Alexa skill template git repo you want to use. By default, master.
+* 
 How to obtain the ASK CLI related variables are explained in [this post](https://dzone.com/articles/docker-image-for-ask-and-aws-cli-1)
-
 
 Here you have the parameters section of the CircleCI pipeline:
 ```yaml
@@ -93,9 +93,11 @@ Here you have the parameters section of the CircleCI pipeline:
 
 ### Setting up the executor
 
-We have to stablish in our pipeline the executor that we are going to execute. This executor will be a Docker Image we have created and have installed the ASK CLI and AWS CLI.
+We have to define in our pipeline the executor that we are going to execute. This executor will be a Docker Image we have created and have installed the ASK CLI and AWS CLI.
 
-These executor has more bash tools as well. This Docker Image have a tag per ASK CLI version, so you can specify the version with the pipeline parameter `ASK_VERSION`.
+These executor has more bash tools intalled as well. This Docker Image have a tag per ASK CLI version, so you can specify the version with the pipeline parameter `ASK_VERSION`.
+
+You can find all the ASK CLI versions supported [here](https://hub.docker.com/repository/docker/xavidop/alexa-ask-aws-cli/tags).
 
 ```yaml
   executors:
@@ -107,7 +109,7 @@ These executor has more bash tools as well. This Docker Image have a tag per ASK
 
 ### Checkout
 
-The first thing we need to do is download the code of this repo because there are some script that we are going to execute in this pipeline.
+The second thing we need to do is download the code of this repo because there are some script that we are going to execute in this pipeline.
 
 Once downloaded, we will add the execution permissions for those scripts to be able to run them properly.
 Finally, we persist all the code downloaded in order to reuse it in the next steps.
@@ -138,9 +140,9 @@ Finally, we persist all the code downloaded in order to reuse it in the next ste
 
 This is where the magic starts. Once we have downloaded all the code, we will create a new Alexa Hosted Skill. 
 
-For this process we will use the bash tool `expect` because the creation of the Alexa Hosted Skill requires interaction with a keyboard.
+For this process we will use the bash tool `expect`. This is because the creation of the Alexa Hosted Skill requires interaction with a keyboard.
 
-These scripts works like this: they will expect some known strings and then, they will introduce a value or in other cases, they will just simulate pressing the enter key(`\r`) automatically.
+These scripts works like this: they will expect some known strings and then, they will introduce a value or they will just simulate pressing the enter key(`\r`) automatically. Depending on the input needed in the creation process.
 
 1. For **ASK CLI 1.x** version:
 ```bash
@@ -186,7 +188,7 @@ The scripts above will create a HelloWorld skill:
 
 ![image](docs/helloworld.png)
 
-One important thing here is that in this step we are going to set the executor environment variables needed to run the Alexa Hosted ASK CLI creation command with the ones received as a parameter.
+One important thing here is that in this step we are going to set the environment variables in the executor which are needed to run the Alexa Hosted ASK CLI creation command. The values of this environment variables will be the ones received as parameters.
 
 Here you can find the full code of this job:
 
@@ -223,25 +225,25 @@ Here you can find the full code of this job:
 
 ### Downloading the template
 
-Now we have an Alexa Hosted Skill created and deployed with an ARN. It is time to download the Alexa Skill Template set as a parameter. This template must be a git repository.
-You can specify the branch of the git template repo. If it is not specified, by default we will use the master/main branch.
+Now we have an Alexa Hosted Skill (which is a HelloWorld Skill) created and deployed with an ARN. It is time to download the Alexa Skill Template set as a parameter. This template must be a git repository.
+You can specify the branch of the git template repo. If it is not specified, by default we will use the master branch.
 
-When we have downloaded the template of the Alexa Skill, now we have to merge both skills (the helloworld created in the previous step and the one downloaded recently).
+When we have downloaded the template of the Alexa Skill, now we have to merge both skills (the helloWorld created in the previous step and the one downloaded recently).
 
 This is because the Alexa Skill template we do not know how its structured and which `deployer` is using (Alexa Hosted, CloudFormation or AWS-lambda). This is why we are doing this step which is the most important!
 
-So once we have mentioned the reason of this process. Let's explain step by step the process:
+So once we have mentioned the reasons to execute this step. Let's explain step by step this job:
 1. The first thing that we are going to do is to clean up the HelloWorld Skill created before. It means remove the interaction model and its lambda code.
-2. Then depending of the ASK CLI Version you choose, we will migrate all the info of the Alexa Skill template to the HelloWorld Skill:
+2. Then depending of the ASK CLI Vvrsion you have chosen, we will migrate all the info of the Alexa Skill template to the HelloWorld Skill:
    1. For **ASK CLI 1.x** version:
       1. For this version which is deprecated we only merge the following things of the Alexa Skill template:
          1. The publishing information.
          2. The lambda code.
-      2. We remove the `.ask` and `.git` folder of the Alexa Skill template downloaded. We will use the folder of the skill that we have created before.
+      2. We also remove the `.ask` and `.git` folder of the downloaded Alexa Skill template.
    2. For **ASK CLI 2.x** version:
-      1. We get all the endpoints and regions information of the Helloworld Skill and put that info in the Alexa Skill template downloaded.
-      2. We remove the `.ask` and `.git` folder of the Alexa Skill template downloaded. We will use the folder of the skill that we have created before.
-      3. Then we replace the lambda code, skill-package and so on for the ones downloaded. 
+      1. We get all the endpoints and regions information of the Helloworld Skill and put that info in the downloaded Alexa Skill template.
+      2. We remove the `.ask` and `.git` folder of the downloaded Alexa Skill template.
+      3. Then we replace the lambda code, skill-package and all the skill metadata with the ones downloaded in the template. 
 
 In this step we set the environment variables as well.
 
@@ -326,9 +328,9 @@ Here you can find the full code of this job:
 
 ### Deploy the Alexa Skill with all changes
 
-Here we have our first Helloworld Alexa Hosted Skill successfully merged with the Alexa Skill template downloaded. now it is time to deploy the changes.
+At this moment we have our first HelloWorld Alexa Hosted Skill successfully merged with the downloaded Alexa Skill template. Now it is time to deploy the changes.
 
-Depending on the version of the ASK CLI version, it will execute one commands or another one:
+Depending on the version of the ASK CLI version, it will execute one commands or another:
 1. For **ASK CLI 1.x** version:
    1. We will execute another `expect` script. In this case we will execute `deploy_hosted_skill_v1.sh`:
    ```bash
@@ -383,7 +385,7 @@ Here you can find the full code of this job:
           path: ./
 ```
 
-Finally, our HelloWorld skill will transform into the Alexa Skill template downloaded:
+Finally, our HelloWorld skill will transform into the downloaded Alexa Skill template:
 
 ![image](docs/final.png)
 
@@ -410,13 +412,14 @@ Here you can find the pipeline specification with all the jobs commented above:
 **NOTE:** all the CircleCI config files are located on `.circleci` folder.
 ## Invocation & Usage
 
-Now the automation process is fully explained, let's start explaining how to use it using the CircleCI API.
+Now the automation process is fully explained. Let's start explaining how to use it using the CircleCI API.
 
 It is important to mention that all the credentials are not be stored in any place. We will use it only for the automation process. Please check the source code if you have some doubts.
 
+This is how the pipeline can be called using the CircleCI pipeline:
 ```bash
  curl --request POST \
-      --url https://circleci.com/api/v2/project/github/<your-username>/alexa-skill-autodeployer/pipeline?circle-token=<circle-ci-token> \
+      --url https://circleci.com/api/v2/project/<your-vcs>/<your-username>/<your-repo-name>/pipeline?circle-token=<your-circle-ci-token> \
       --header 'content-type: application/json' \
       --data-binary @- << EOF  
       { 
@@ -491,9 +494,10 @@ Thanks to the ASK CLI we can perform this complex task.
 I hope this tool is useful to you.
 
 You can use this tool, for example, for the following use cases:
-1. Add a button in your Alexa Skill templates git repos or in your webpage and automatically deploy them in your AWS account.
-2. Transform you Self Hosted skills into Alexa Hosted ones.
-3. Trying new Alexa skills and keep learning!
+1. Add a button in your Alexa Skill templates git repos automatically deploy them in your AWS account.
+2. Add a button in your webpage that performs a call to this process.
+3. Transform you Self Hosted skills into Alexa Hosted ones.
+4. Trying new Alexa skills and keep learning!
 
 That's all folks!
 
