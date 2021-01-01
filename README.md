@@ -29,7 +29,7 @@ These steps are automated using the continuous integration system circleCI and a
 Here you have the technologies used in this project
 1. ASK CLI - [Install and configure ASK CLI](https://developer.amazon.com/es-ES/docs/alexa/smapi/quick-start-alexa-skills-kit-command-line-interface.html)
 2. CircleCI Account - [Sign up here](https://circleci.com/)
-4. Visual Studio Code
+3. Visual Studio Code
 
 ## ASK CLI (Alexa Skill Kit CLI)
 
